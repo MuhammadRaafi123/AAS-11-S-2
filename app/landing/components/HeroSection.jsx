@@ -16,7 +16,7 @@
 
             {/* Logo */}
             <h1 className="text-2xl font-extrabold tracking-wide text-white">
-                LAPOR <span className="text-blue-500">NIH</span>
+                LAPORAN <span className="text-blue-500">KUH</span>
             </h1>
 
             {/* Auth Button */}

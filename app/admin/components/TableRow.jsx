@@ -1,3 +1,7 @@
+"use client";
+
+import { HiOutlineEye, HiOutlinePencilAlt } from "react-icons/hi";
+
 const statusConfig = {
     menunggu_verifikasi: {
         label: "Menunggu",
@@ -34,6 +38,7 @@ export default function TableRow({
     status,
     date,
     onUpdateStatus,
+    onDetail,
 }) {
     const s = statusConfig[status] || {
         label: status,
@@ -42,8 +47,7 @@ export default function TableRow({
     };
 
     return (
-        <tr className="border-b border-white/5 hover:bg-white/3 transition-colors group">
-
+        <tr className="border-b border-white/5 hover:bg-white/5 transition-colors">
             {/* No. Tiket */}
             <td className="py-3.5 px-4">
                 <span className="text-xs font-mono font-semibold text-violet-400 bg-violet-500/10 border border-violet-500/20 px-2 py-1 rounded-lg">
@@ -79,7 +83,9 @@ export default function TableRow({
 
             {/* Status */}
             <td className="py-3.5 px-4">
-                <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border ${s.className}`}>
+                <span
+                    className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border ${s.className}`}
+                >
                     <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`} />
                     {s.label}
                 </span>
@@ -90,20 +96,33 @@ export default function TableRow({
                 <span className="text-xs text-gray-500">{date || "-"}</span>
             </td>
 
-            {/* Aksi */}
+            {/* AKSI */}
             <td className="py-3.5 px-4">
-                <button
-                    onClick={() => onUpdateStatus && onUpdateStatus()}
-                    className="
-                        text-xs font-semibold px-3 py-1.5 rounded-lg
-                        bg-violet-500/10 text-violet-400 border border-violet-500/20
-                        hover:bg-violet-500/20 hover:text-violet-300
-                        transition-all duration-150
-                        opacity-0 group-hover:opacity-100
-                    "
-                >
-                    Update
-                </button>
+                <div className="flex items-center gap-2">
+
+                    {/* Detail */}
+                    {onDetail && (
+                        <button
+                            onClick={onDetail}
+                            className="p-2 rounded-lg bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition"
+                            title="Detail"
+                        >
+                            <HiOutlineEye className="w-4 h-4" />
+                        </button>
+                    )}
+
+                    {/* Update Status */}
+                    {onUpdateStatus && (
+                        <button
+                            onClick={onUpdateStatus}
+                            className="p-2 rounded-lg bg-violet-500/10 text-violet-400 hover:bg-violet-500/20 transition"
+                            title="Ubah Status"
+                        >
+                            <HiOutlinePencilAlt className="w-4 h-4" />
+                        </button>
+                    )}
+
+                </div>
             </td>
         </tr>
     );

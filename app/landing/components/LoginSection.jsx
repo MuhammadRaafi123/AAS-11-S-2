@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation"; 
 
 export default function LoginSection() {
+
+    
     const router = useRouter();
 
     const [form, setForm] = useState({
@@ -27,94 +29,81 @@ export default function LoginSection() {
         });
     };
 
-    // HANDLE LOGIN
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        setLoading(true);
+const handleLogin = async (e) => {
+    e.preventDefault();
+
+    setLoading(true);
+    setMessage({ type: "", text: "" });
+
+    try {
+        const response = await fetch(
+            "http://localhost:5000/api/auth/login",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: form.email,
+                    password: form.password,
+                }),
+            }
+        );
+
+        const data = await response.json();
+
+        console.log("LOGIN RESPONSE:", data);
+
+        if (!response.ok) {
+            throw new Error(
+                data.message || "Login gagal"
+            );
+        }
+
+        const role = String(
+            data?.user?.role || ""
+        )
+            .trim()
+            .toLowerCase()
+            .replace(/\s+/g, "_");
+
+        localStorage.setItem(
+            "token",
+            data.token
+        );
+
+        localStorage.setItem(
+            "user",
+            JSON.stringify({
+                ...data.user,
+                role,
+            })
+        );
+
         setMessage({
-            type: "",
-            text: "",
+            type: "success",
+            text: "Login berhasil",
         });
 
-        try {
-            const res = await fetch(
-                "http://localhost:5000/api/auth/login",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(form),
-                }
-            );
-
-            const data = await res.json();
-
-            // 1. Cek response mentah dari API di console log browser
-            console.log("LOGIN RESPONSE:", data);
-
-            // LOGIN GAGAL
-            if (!res.ok) {
-                setMessage({
-                    type: "error",
-                    text: data.message || "Login gagal",
-                });
-                return;
-            }
-
-            // 2. Ambil role dengan proteksi ganda (baik dari data.user.role atau data.role)
-            const rawRole = data?.user?.role || data?.role || "";
-
-            const role = String(rawRole)
-                .trim()
-                .toLowerCase()
-                .replace(/\s+/g, "_");
-
-            // 3. Pastikan log ini mencetak "admin" atau "super_admin" di console
-            console.log("ROLE FINAL:", role);
-
-            // SIMPAN TOKEN
-            localStorage.setItem(
-                "token",
-                data.token
-            );
-
-            // SIMPAN USER (menggunakan data.user atau fallback ke root object data)
-            localStorage.setItem(
-                "user",
-                JSON.stringify({
-                    ...(data.user || data),
-                    role,
-                })
-            );
-
-            setMessage({
-                type: "success",
-                text: "Login berhasil",
-            });
-
-            // REDIRECT MENGGUNAKAN NEXT.JS ROUTER
-            setTimeout(() => {
-                if (
-                    role === "admin" ||
-                    role === "super_admin"
-                ) {
-                    router.push("/admin");
-                } else {
-                    router.push("/home");
-                }
-            }, 500);
-
-        } catch (err) {
-            console.log("LOGIN ERROR:", err);
-            setMessage({
-                type: "error",
-                text: "Terjadi kesalahan server",
-            });
-        } finally {
-            setLoading(false);
+        if (role === "super_admin") {
+            router.push("/super_admin/dashboard");
+        } else if (role === "admin") {
+            router.push("/admin");
+        } else {
+            router.push("/home");
         }
-    };
+
+    } catch (err) {
+        console.error(err);
+
+        setMessage({
+            type: "error",
+            text: err.message,
+        });
+    } finally {
+        setLoading(false);
+    }
+};
 
     return (
         <div className="min-h-screen bg-gray-950 flex items-center justify-center px-6 py-10">
@@ -134,7 +123,7 @@ export default function LoginSection() {
                         <img
                             src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f"
                             alt="login"
-                            className="mt-10 rounded-3xl shadow-xl h-[260px] w-full object-cover"
+                            className="mt-10 rounded-3xl shadow-xl h-260px w-full object-cover"
                         />
                     </div>
                 </div>
@@ -212,7 +201,7 @@ export default function LoginSection() {
                     <p className="text-gray-500 mt-8 text-center">
                         Belum punya akun?{" "}
                         <Link
-                            href="/register"
+                            href="/landing/register"
                             className="text-blue-400 font-semibold hover:underline"
                         >
                             Register

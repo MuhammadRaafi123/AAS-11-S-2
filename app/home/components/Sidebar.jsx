@@ -42,13 +42,14 @@ export default function Sidebar({
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-
-        const storedUser = localStorage.getItem("user");
-
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
-
+        const init = async () => {
+            await Promise.resolve();
+            const storedUser = localStorage.getItem("user");
+            if (storedUser) {
+                setUser(JSON.parse(storedUser));
+            }
+        };
+        init();
     }, []);
 
     return (
@@ -70,7 +71,7 @@ export default function Sidebar({
                     </div>
 
                     <span className="text-lg font-extrabold tracking-wide text-white whitespace-nowrap">
-                        LAPOR <span className="text-blue-400">NIH</span>
+                        LAPORAN <span className="text-blue-400">KUH</span>
                     </span>
 
                 </div>

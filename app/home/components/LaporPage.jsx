@@ -36,14 +36,18 @@ export default function LaporPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (e) {
-        console.error(e);
+    const init = async () => {
+      await Promise.resolve();
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch (e) {
+          console.error(e);
+        }
       }
-    }
+    };
+    init();
   }, []);
 
   // Handle Input Teks, Select, dan Textarea
@@ -89,7 +93,7 @@ export default function LaporPage() {
       const token = localStorage.getItem("token");
       if (!token) {
         alert("Anda belum login!");
-        router.push("/login");
+        router.push("/landing/login");
         return;
       }
 

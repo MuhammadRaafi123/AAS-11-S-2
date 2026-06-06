@@ -71,7 +71,7 @@ export default function Topbar({
         try {
             setLoadingNotif(true);
             const token = localStorage.getItem("token");
-            
+
             // Sesuaikan URL endpoint ini dengan konfigurasi rute backend Anda
             const response = await fetch("http://localhost:5000/api/notifications", {
                 method: "GET",
@@ -109,12 +109,15 @@ export default function Topbar({
 
     // Ambil data user & trigger fetch notifications
     useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
-        
-        fetchNotifications();
+        const init = async () => {
+            await Promise.resolve();
+            const storedUser = localStorage.getItem("user");
+            if (storedUser) {
+                setUser(JSON.parse(storedUser));
+            }
+            fetchNotifications();
+        };
+        init();
     }, []);
 
     // Tutup dropdown jika klik di luar
@@ -162,8 +165,8 @@ export default function Topbar({
         role === "super_admin"
             ? "Super Administrator"
             : role === "admin"
-            ? "Administrator"
-            : "Masyarakat";
+                ? "Administrator"
+                : "Masyarakat";
 
     return (
         <div className="flex items-center justify-between">
@@ -368,7 +371,7 @@ export default function Topbar({
                             </div>
 
                             <Link
-                                href="/profil"
+                                href="/home/profil"
                                 onClick={() => setShowProfileMenu(false)}
                                 className="
                                     flex items-center gap-3 px-4 py-3
